@@ -1,25 +1,29 @@
+// Get basic libraries
 #include <Wire.h>
 #include "MPU6050_6Axis_MotionApps612.h"
 
-
-
 #define Mux 0x70
-// упрощеный I2C адрес нашего гироскопа/акселерометра MPU-6050.
+// Simplified object to call 
 MPU6050 mpu(0x68);
 
+// Error code
 uint8_t error_code = 0U;
  
+// Initialise these first
 void MuxSelect(uint8_t i);
 void giroscop_setup(uint8_t adr);
 
 void setup() {
+  // Setting wire rate too hight may affect data integrity
   Wire.setClock(200000);
-  //Wire.setWireTimeout(250000, true);
+  // Selecting communication speed (must match with Python Script)
   Serial.begin(115200);
   Serial.print("\n");
-  /* Enable I2C */
-  Wire.begin();//(22,23); //SDA //SCL
+ 
+  // Enable I2C
+  Wire.begin(); //(SDA; SCL)
 
+  // Setting up MPUs
   for (int i = 0; i <= 5; i++) {
     MuxSelect(i);
     Serial.print("Initialising MPU #"); Serial.print(i); Serial.print("\n");
@@ -60,6 +64,7 @@ void loop()
   }
 }
 
+// I know it looks bad, i don't know any better *yet* 
 void PrintKey(uint8_t i){
   switch(i){
     case 0:
@@ -86,9 +91,9 @@ void PrintKey(uint8_t i){
   }
 }
  
-//Функция мультиплексирует адреса для обмена
+//function to select Multiplexor route
 void MuxSelect(uint8_t i) {
-  if (i > 7) return;
+  if (i > 7) return; 
  
   Wire.beginTransmission(Mux);
   Wire.write(1 << i);
