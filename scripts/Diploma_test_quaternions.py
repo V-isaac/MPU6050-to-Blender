@@ -20,19 +20,6 @@ if not logger.handlers:
     ch.setLevel(logging.DEBUG)
     ch.setFormatter(logging.Formatter("%(asctime)s %(levelname)s [%(name)s]: %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
     logger.addHandler(ch)
-
-# ver 04.03
-# added Modal Operator
-# added Timer
-# fixed all the issues regarding Modal Timer class
-# added 2nd script and numpy
-# overall rewrite to new system with JavaScript Object Notation, bugfixes + cleanup 
-# success! some clean up
-# rewrite to quaternions
-# debugging issues what the fuck?
-# 0 clue whats wrong possible rewrite?
-# whitespacing issue resolved
-# all the issues are resolved. Model is fully operational
          
 COM_PORT = "COM3"
 FPS = 30 #change for faster/slower communication 24/30/60
