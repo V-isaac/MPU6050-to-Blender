@@ -21,7 +21,7 @@ if not logger.handlers:
 class UARTTable:
     def __init__(self, port, baudrate=115200):
         self.port = port
-        self.baudrate = 115200
+        self.baudrate = 115200 #default baud rate if other isn't stated
         self.ser = None
         self.stop_sig = threading.Event()
         self.stop_sig.clear()
@@ -88,7 +88,6 @@ class UARTTable:
                     continue
 
             data = buf.decode()
-            #logger.warning(str(data))
             try:
                 data = json.loads(data)
             except json.decoder.JSONDecodeError:
@@ -104,14 +103,12 @@ class UARTTable:
 
 if __name__ == "__main__":
     try:
+        # If you run this script it will try this:
         uart_table = UARTTable("COM3")
-        
-        # uart_table.start()
         uart_table.startThreaded()
-
         while 1:
             print(uart_table.get("lh0"))
-            
             time.sleep(0.01)
+        # But in under no curcumstances you should run this one as it will just lock Blender for some reason
     except KeyboardInterrupt:
         uart_table.stop()
