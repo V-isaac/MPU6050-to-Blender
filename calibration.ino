@@ -2,7 +2,7 @@
 #include "MPU6050_6Axis_MotionApps612.h"
 
 MPU6050 mpu(0x68);
- 
+
 void MuxSelect(uint8_t i);
 
 void setup() {
@@ -16,13 +16,13 @@ void setup() {
   uint8_t error_code = 0U, errors = 0;
 
   for (uint8_t it = 0; it <= 7; it++) {
-    MuxSelect(it); // adress selection
-    Serial.print("Инициализируем MPU#"); Serial.print(it); Serial.println("");
+    MuxSelect(it); // Выбор адреса
+    Serial.print("MPU#"); Serial.print(it); Serial.println("");
     //Initialisation and bunch of tests
     mpu.initialize();
-    error_code = mpu.dmpInitialize(); 
+    error_code = mpu.dmpInitialize();
     if (error_code == 1U) {
-      Serial.print("Device "); Serial.print(it); Serial.println(" memory.");
+      Serial.print(" "); Serial.print(it); Serial.println(" memory.");
       errors++;
     }
     if (error_code == 2U) {
@@ -35,38 +35,42 @@ void setup() {
   }
 
   if (errors != 0) {
-    Serial.print("Skill issues: "); Serial.print(errors); 
+    Serial.print("Amount of skill issues: "); Serial.print(errors); 
     while (1) {}
   }
   
-  Serial.println("Im done with this shit.");
+  Serial.println("Lets go.");
 }
+char incomingByte;
 
+void loop() {
+  while(1){
+    if (Serial.available() > 0) {
+      incomingByte = Serial.read();
 
-
-void loop() { 
-  for (uint8_t it = 0; it <= 7; it++){
-    MuxSelect(it);
-
-    if(!mpu.dmpGetCurrentFIFOPacket(fifoBuffer)) { return; }
-
-    Quaternion q;
-
-    mpu.dmpGetQuaternion(&q, fifoBuffer);
-
-    Serial.print("{ \"key\": \"lh"); Serial.print(it); Serial.print("\", \"value\": [");
-    Serial.print(q.w);Serial.print(", ");
-    Serial.print(q.x);Serial.print(", ");
-    Serial.print(q.y);Serial.print(", ");
-    Serial.print(q.z);Serial.print("]}\n");
+      if(isdigit(incomingByte))
+        break;
+    }
   }
-}
- 
 
-void MuxSelect(uint8_t i) {
-  if (i > 7) return; 
+  MuxSelect(incomingByte);
+  Serial.println("accX accY accZ gyrX gyrY gyrZ");
+
+  mpu.CalibrateAccel(6);
+  mpu.CalibrateGyro(6); // number of iterations
+  Serial.print(mpu.getXAccelOffset()); Serial.print(", ");
+  Serial.print(mpu.getYAccelOffset()); Serial.print(", ");
+  Serial.print(mpu.getZAccelOffset()); Serial.print(", ");
+  Serial.print(mpu.getXGyroOffset()); Serial.print(", ");
+  Serial.print(mpu.getYGyroOffset()); Serial.print(", ");
+  Serial.print(mpu.getZGyroOffset());
+  Serial.println("");
+}
+
+void MuxSelect(uint8_t refI) {
+  if (refI > 7) return;
  
-  Wire.beginTransmission(0x70); 
-  Wire.write(1 << i);
+  Wire.beginTransmission(0x70);
+  Wire.write(1 << refI);
   Wire.endTransmission();
 }
