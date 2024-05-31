@@ -1,51 +1,45 @@
 #include <Wire.h>
 #include "MPU6050_6Axis_MotionApps612.h"
 
-// упрощеный I2C адрес нашего гироскопа/акселерометра MPU-6050.
 MPU6050 mpu(0x68);
  
 void MuxSelect(uint8_t i);
 
-// Allocating memory to rewrite each time
-uint8_t fifoBuffer[64];
-
 void setup() {
-
-  //Wire.setWireTimeout(250000, true);
-  Serial.begin(115200); // Запуск общения по USB
+  Serial.begin(115200);
 
   /* Enable I2C */
-  Wire.setClock(200000); // Запуск общения по IIC
+  Wire.setClock(200000);
   Wire.begin();//(22,23); //SDA //SCL
   Serial.println("");
 
-  uint8_t error_code = 0U, errors = 0; // Локальные переменные для фиксации ошибок
+  uint8_t error_code = 0U, errors = 0;
 
   for (uint8_t it = 0; it <= 7; it++) {
-    MuxSelect(it); // Выбор адреса
+    MuxSelect(it); // adress selection
     Serial.print("Инициализируем MPU#"); Serial.print(it); Serial.println("");
     //Initialisation and bunch of tests
-    mpu.initialize(); // Инициализация датчика через библеотеку
-    error_code = mpu.dmpInitialize(); // Инициализация DMP. Функция возвращает код ошибки при наличии
+    mpu.initialize();
+    error_code = mpu.dmpInitialize(); 
     if (error_code == 1U) {
-      Serial.print("Устройство "); Serial.print(it); Serial.println(" инициализация неудалась: неудача в первычной загрузке памяти.");
+      Serial.print("Device "); Serial.print(it); Serial.println(" memory.");
       errors++;
     }
     if (error_code == 2U) {
-      Serial.print("Device "); Serial.print(it); Serial.println(" инициализация неудалась: неудача конфигурации обновлений DMP.");
+      Serial.print("Device "); Serial.print(it); Serial.println(" DMP update.");
       errors++;
     }
-    if(!mpu.testConnection()){ Serial.println("Неудалось установить связь с датчиком."); }
+    if(!mpu.testConnection()){ Serial.println("Connection."); }
 
-    mpu.setDMPEnabled(true); // Включаем DMP при удачном запуске
+    mpu.setDMPEnabled(true);
   }
 
   if (errors != 0) {
-    Serial.print("Количество ошибок: "); Serial.print(errors); 
+    Serial.print("Skill issues: "); Serial.print(errors); 
     while (1) {}
   }
   
-  Serial.println("Отлично! Всё готово к работе.");
+  Serial.println("Im done with this shit.");
 }
 
 
@@ -68,11 +62,11 @@ void loop() {
   }
 }
  
-//Функция мультиплексирует адреса для обмена данными
+
 void MuxSelect(uint8_t i) {
-  if (i > 7) return; // Если выходим за пределы адресов - не взаимодействуем
+  if (i > 7) return; 
  
-  Wire.beginTransmission(0x70); // Начинаем общение по данному адресу
-  Wire.write(1 << i); // Сместить Истину на определённый регистр
-  Wire.endTransmission(); // Закончить общение
+  Wire.beginTransmission(0x70); 
+  Wire.write(1 << i);
+  Wire.endTransmission();
 }
