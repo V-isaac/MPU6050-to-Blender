@@ -3,7 +3,7 @@
 
 // Change to true or false
 // Note that Custom Calibration has priority
-#define LIBRARY_EXAMPLE False
+#define LIBRARY_EXAMPLE true
 #define CUSTOM_CALIBRATION false
 // Some variables for calibration
 #define BUFFER_SIZE 100
